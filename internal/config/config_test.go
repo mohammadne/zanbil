@@ -7,7 +7,7 @@ import (
 )
 
 func TestLoadDefaults(t *testing.T) {
-	_, err := config.LoadDefaults(true)
+	_, err := config.Load(config.EnvironmentLocal)
 	if err != nil {
 		t.Error(err)
 	}

@@ -1,4 +1,4 @@
-package core
+package config
 
 const (
 	Namespace = "mohammadne"

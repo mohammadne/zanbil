@@ -12,7 +12,6 @@ import (
 	"github.com/mohammadne/zanbil/internal/api/http"
 	"github.com/mohammadne/zanbil/internal/api/http/i18n"
 	"github.com/mohammadne/zanbil/internal/config"
-	"github.com/mohammadne/zanbil/internal/core"
 	"github.com/mohammadne/zanbil/internal/repositories/cache"
 	"github.com/mohammadne/zanbil/internal/repositories/storage"
 	"github.com/mohammadne/zanbil/internal/usecases"
@@ -28,16 +27,7 @@ func main() {
 	environmentRaw := flag.String("environment", "", "The environment (default: local)")
 	flag.Parse() // Parse the command-line flags
 
-	var cfg config.Config
-	var err error
-
-	switch core.ToEnvironment(*environmentRaw) {
-	case core.EnvironmentLocal:
-		cfg, err = config.LoadDefaults(true)
-	default:
-		cfg, err = config.Load(true)
-	}
-
+	cfg, err := config.Load(config.ToEnvironment(*environmentRaw))
 	if err != nil {
 		log.Fatalf("failed to load config: \n%v", err)
 	}
@@ -49,7 +39,7 @@ func main() {
 
 	logger.Warn("Build Information", cmd.BuildInfo()...)
 
-	postgres, err := postgres.Open(cfg.Postgres, core.Namespace, core.System)
+	postgres, err := postgres.Open(cfg.Postgres, config.Namespace, config.System)
 	if err != nil {
 		logger.Fatal("error connecting to postgres database", zap.Error(err))
 	}
