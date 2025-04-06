@@ -29,56 +29,54 @@ hacks/release/docker && podman compose -f compose.local.yml down
 
 ## Features
 
-### Logic
+### Core Logic
 
-- mimic the ecommerce platform by having products and categories
-- two seperate servers for requests and monitoring stuffs
-- using fiber v3 with middlewares and handlers (template files are embedded using the `embed` package)
-- custom config loader via `envconfig`
-- zap logger and prometheus monitoring
-- Redis and postgresql database
-- Hexagonal architecture by seperating business layers
-- Custom DB migration handling (`cmd/migration/schemas`)
-- i18n and translation handling for api responses
+- Mimics an e-commerce platform with **products** and **categories**
+- Two separate servers: one for **API requests**, one for **monitoring**
+- Built with **Fiber v3**, using embedded HTML templates (`embed` package)
+- Custom configuration loader based on `envconfig`
+- Structured **Zap logger** and integrated **Prometheus** metrics
+- Uses **PostgreSQL** and **Redis** as primary data stores
+- Clean Hexagonal Architecture (business logic separated from infrastructure)
+- Custom database migration system (`cmd/migration/schemas`)
+- Internationalization (i18n) support for API responses
 
 ### Tests
 
-I have written unit tests for different modules, for mocking redis I have used `miniredis` and for mysql database I have used the package `sqlmock`, also for mocking api calls to this repositories I have used the `testify` package to mock the behavior of this repositories.
+Zanbil includes a variety of tests to ensure quality and performance:
 
-For the service layer and the item's service I have added some sample `benchmark` tests to measure the performance, altough this method uses the mocks and mocks do not represent real performance.
+- **Unit Tests** – Use `testify`, `sqlmock`, and `miniredis` to test components in isolation
+- **Benchmark Tests** – Evaluate performance of services (note: benchmarks use mocks)
+- **Functional Tests** – Validate cache behavior with Redis using Docker Compose
+- **Integration Tests** – End-to-end tests using real HTTP requests and cookies
+- **Load Testing** – Performed via `k6` to simulate real-world traffic
 
-There is a functional test and an integration test in the tests directory which are very basic test cases spinned up by docker-compose (the one in deployments/docker/compose.local.yml). in the functional part we test the cache module and in the integration test we test the behavior of the whole application (set cookie and send the request to the applicaion, for more advanced integration tests we can examine the expectations like the value of items in redis and mysql by an actual redis and mysql driver and assert if something goes wrong).
+Tests are organized to reflect realistic development environments:
 
-I have also added `k6` for the `load` testing.
-
-So In my project, I have the following tests:
-
-- unit tests
-- benchmark tests
-- functional
-- integration
-- load test via k6
+- Functional and integration tests use the `deployments/docker/compose.local.yml` setup
+- Redis and PostgreSQL expectations can be verified via actual drivers for more robust assertions
 
 ### Provisioning
 
-- use `cluster` Ansible to provision k8s cluster via kind for testing purposes
+- Use [**cluster** Ansible tool](https://github.com/k3s-io/k3s-ansible) to provision a Kubernetes cluster with `kind` for local testing
 
 ### Deployment
 
 #### Use github Action for the build process
 
+- Automated build and release pipeline using GitHub Actions
+
 #### Use compose file with podman for container deployment
 
-The application can be deployed using `compose`:
-
-- **Local Development:** Use the `.local` compose file to resolve dependencies locally.
-- **Production:** The `.prod` compose file is designed for deploying the application to a server.
+- **Local:** Use `.local` compose file to run services on your local machine
+- **Production:** Use `.prod` compose file for deploying to production environments
 
 #### use k8s helm chart via helmsman and helm-secret
 
-A Kubernetes setup (`k8s/`) is provided for deploying the application with `helmsman` and `helm` charts.
+- Deploy with Helm via `helmsman` and `helm-secrets`
+- Kubernetes manifests and Helm chart available in the `k8s/` directory
 
-### TODOs
+### TODOs 📝
 
-- use idempotent admin APIs
-- implement rate limiting
+- [ ] Add idempotent admin APIs
+- [ ] Implement request rate limiting
